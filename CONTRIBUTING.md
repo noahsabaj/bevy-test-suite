@@ -10,7 +10,7 @@ Be respectful and constructive. We're all here to make Bevy testing better.
 
 1. **Fork and Clone**
    ```bash
-   git clone https://github.com/yourusername/bevy-test-suite.git
+   git clone https://github.com/noahsabaj/bevy-test-suite.git
    cd bevy-test-suite
    ```
 

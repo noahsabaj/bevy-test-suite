@@ -4,7 +4,7 @@
 //! invariants hold for all possible inputs.
 
 use bevy::prelude::*;
-use bevy_test_suite::{property_test, bevy_test_utils};
+use bevy_test_suite::{bevy_test_utils, property_test};
 
 bevy_test_utils!();
 
@@ -107,7 +107,8 @@ impl Inventory {
     }
 
     fn current_weight(&self) -> f32 {
-        self.items.iter()
+        self.items
+            .iter()
             .map(|i| i.weight * i.quantity as f32)
             .sum()
     }

@@ -5,7 +5,7 @@ edition = "2021"
 authors = ["bevy-test-suite contributors"]
 description = "The #[bevy_test] attribute you've been waiting for, plus powerful declarative testing for Bevy"
 license = "MIT OR Apache-2.0"
-repository = "https://github.com/yourusername/bevy-test-suite"
+repository = "https://github.com/noahsabaj/bevy-test-suite"
 keywords = ["bevy", "testing", "test", "gamedev", "declarative"]
 categories = ["game-development", "development-tools::testing"]
 

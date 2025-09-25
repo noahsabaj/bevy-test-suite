@@ -2,7 +2,7 @@
 
 [![Crates.io](https://img.shields.io/crates/v/bevy-test-suite.svg)](https://crates.io/crates/bevy-test-suite)
 [![Documentation](https://docs.rs/bevy-test-suite/badge.svg)](https://docs.rs/bevy-test-suite)
-[![License](https://img.shields.io/crates/l/bevy-test-suite.svg)](https://github.com/yourusername/bevy-test-suite)
+[![License](https://img.shields.io/crates/l/bevy-test-suite.svg)](https://github.com/noahsabaj/bevy-test-suite)
 
 **TWO ways to test Bevy apps**: The `#[bevy_test]` attribute you asked for, plus declarative `test_scenario!` macros for complex integration tests. 80% less boilerplate, 100% less pain.
 

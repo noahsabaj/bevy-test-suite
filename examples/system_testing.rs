@@ -4,7 +4,7 @@
 //! using the test_system! macro.
 
 use bevy::prelude::*;
-use bevy_test_suite::{test_system, bevy_test_utils};
+use bevy_test_suite::{bevy_test_utils, test_system};
 
 bevy_test_utils!();
 
@@ -57,10 +57,7 @@ test_system!(test_multiple_entities_movement {
 });
 
 // Test resource interactions
-fn score_system(
-    mut score: ResMut<Score>,
-    enemies: Query<Entity, With<Enemy>>,
-) {
+fn score_system(mut score: ResMut<Score>, enemies: Query<Entity, With<Enemy>>) {
     score.0 = enemies.iter().count() as u32 * 100;
 }
 
@@ -90,10 +87,7 @@ struct CollisionEvent {
     entity_b: Entity,
 }
 
-fn collision_handler(
-    mut events: EventReader<CollisionEvent>,
-    mut commands: Commands,
-) {
+fn collision_handler(mut events: EventReader<CollisionEvent>, mut commands: Commands) {
     for event in events.read() {
         // Mark entities as collided
         commands.entity(event.entity_a).insert(Collided);

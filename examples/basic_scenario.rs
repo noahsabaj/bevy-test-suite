@@ -4,7 +4,7 @@
 //! integration testing with given/when/then structure.
 
 use bevy::prelude::*;
-use bevy_test_suite::{test_scenario, bevy_test_utils};
+use bevy_test_suite::{bevy_test_utils, test_scenario};
 
 // Generate test utilities (MockWorld, MockInput, assertions)
 bevy_test_utils!();
@@ -121,10 +121,7 @@ test_scenario!(health_regeneration_over_time {
     }
 });
 
-fn regen_system(
-    time: Res<Time>,
-    mut players: Query<&mut Player>,
-) {
+fn regen_system(time: Res<Time>, mut players: Query<&mut Player>) {
     for mut player in &mut players {
         // Regenerate 5 health per second
         player.health = (player.health + (5.0 * time.delta_secs()) as i32).min(100);

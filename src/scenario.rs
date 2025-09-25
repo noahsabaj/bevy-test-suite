@@ -49,7 +49,6 @@ enum TimeAdvance {
 enum Assertion {
     ComponentCheck(Expr),
     EventsReceived(Vec<Ident>),
-    ResourceEquals(Ident, Expr),
     Snapshot(Expr),
 }
 
@@ -92,7 +91,12 @@ impl Parse for TestScenario {
         syn::braced!(then_content in content);
         let then = parse_then_clause(&then_content)?;
 
-        Ok(TestScenario { name, given, when, then })
+        Ok(TestScenario {
+            name,
+            given,
+            when,
+            then,
+        })
     }
 }
 
@@ -158,7 +162,12 @@ fn parse_given_clause(input: ParseStream) -> Result<GivenClause> {
         input.parse::<Token![,]>().ok();
     }
 
-    Ok(GivenClause { resources, events, systems, entities })
+    Ok(GivenClause {
+        resources,
+        events,
+        systems,
+        entities,
+    })
 }
 
 fn parse_when_clause(input: ParseStream) -> Result<WhenClause> {
@@ -197,34 +206,48 @@ fn parse_when_clause(input: ParseStream) -> Result<WhenClause> {
 fn parse_time_advance(expr: &Expr) -> TimeAdvance {
     // Parse expressions like "1.second()", "10.frames()", "5.days()"
     match expr {
-        Expr::MethodCall(method_call) => {
-            match method_call.method.to_string().as_str() {
-                "frames" | "frame" => {
-                    if let Expr::Lit(syn::ExprLit { lit: syn::Lit::Int(n), .. }) = &*method_call.receiver {
-                        TimeAdvance::Frames(n.base10_parse().unwrap_or(1))
-                    } else {
-                        TimeAdvance::Frames(1)
-                    }
+        Expr::MethodCall(method_call) => match method_call.method.to_string().as_str() {
+            "frames" | "frame" => {
+                if let Expr::Lit(syn::ExprLit {
+                    lit: syn::Lit::Int(n),
+                    ..
+                }) = &*method_call.receiver
+                {
+                    TimeAdvance::Frames(n.base10_parse().unwrap_or(1))
+                } else {
+                    TimeAdvance::Frames(1)
                 }
-                "seconds" | "second" => {
-                    if let Expr::Lit(syn::ExprLit { lit: syn::Lit::Float(f), .. }) = &*method_call.receiver {
-                        TimeAdvance::Seconds(f.base10_parse().unwrap_or(1.0))
-                    } else if let Expr::Lit(syn::ExprLit { lit: syn::Lit::Int(n), .. }) = &*method_call.receiver {
-                        TimeAdvance::Seconds(n.base10_parse::<f32>().unwrap_or(1.0))
-                    } else {
-                        TimeAdvance::Seconds(1.0)
-                    }
-                }
-                "days" | "day" => {
-                    if let Expr::Lit(syn::ExprLit { lit: syn::Lit::Int(n), .. }) = &*method_call.receiver {
-                        TimeAdvance::Days(n.base10_parse().unwrap_or(1))
-                    } else {
-                        TimeAdvance::Days(1)
-                    }
-                }
-                _ => TimeAdvance::Frames(1),
             }
-        }
+            "seconds" | "second" => {
+                if let Expr::Lit(syn::ExprLit {
+                    lit: syn::Lit::Float(f),
+                    ..
+                }) = &*method_call.receiver
+                {
+                    TimeAdvance::Seconds(f.base10_parse().unwrap_or(1.0))
+                } else if let Expr::Lit(syn::ExprLit {
+                    lit: syn::Lit::Int(n),
+                    ..
+                }) = &*method_call.receiver
+                {
+                    TimeAdvance::Seconds(n.base10_parse::<f32>().unwrap_or(1.0))
+                } else {
+                    TimeAdvance::Seconds(1.0)
+                }
+            }
+            "days" | "day" => {
+                if let Expr::Lit(syn::ExprLit {
+                    lit: syn::Lit::Int(n),
+                    ..
+                }) = &*method_call.receiver
+                {
+                    TimeAdvance::Days(n.base10_parse().unwrap_or(1))
+                } else {
+                    TimeAdvance::Days(1)
+                }
+            }
+            _ => TimeAdvance::Frames(1),
+        },
         _ => TimeAdvance::Frames(1),
     }
 }
@@ -387,7 +410,12 @@ impl TestScenario {
                         }
                     }
                 }
-                _ => {}
+                Action::Input(input_expr) => {
+                    actions.extend(quote! {
+                        // Send input to the app (e.g., keyboard, mouse events)
+                        app.world_mut().send_event(#input_expr);
+                    });
+                }
             }
         }
 
@@ -412,12 +440,6 @@ impl TestScenario {
                             assert!(!event_reader.is_empty(), "Event {} should have been received", stringify!(#event));
                         });
                     }
-                }
-                Assertion::ResourceEquals(resource, expected) => {
-                    assertions.extend(quote! {
-                        let actual = app.world().resource::<#resource>();
-                        assert_eq!(*actual, #expected, "Resource {} mismatch", stringify!(#resource));
-                    });
                 }
                 Assertion::Snapshot(expr) => {
                     assertions.extend(quote! {

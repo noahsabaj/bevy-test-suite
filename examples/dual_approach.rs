@@ -4,7 +4,7 @@
 //! complement each other.
 
 use bevy::prelude::*;
-use bevy_test_suite::{test_scenario, test_system, bevy_test, bevy_test_utils};
+use bevy_test_suite::{bevy_test, bevy_test_utils, test_scenario, test_system};
 
 // Generate test utilities
 bevy_test_utils!();
@@ -33,10 +33,7 @@ fn test_entity_spawning(app: &mut TestApp) {
 #[bevy_test]
 fn test_movement_with_time(app: &mut TestApp) {
     // Setup
-    let entity = app.spawn((
-        Position(Vec3::ZERO),
-        Velocity(Vec3::X * 10.0),
-    ));
+    let entity = app.spawn((Position(Vec3::ZERO), Velocity(Vec3::X * 10.0)));
 
     // Add movement system
     app.add_systems(Update, movement_system);
@@ -185,7 +182,7 @@ fn test_health_potion_imperative(app: &mut TestApp) {
     let player = app.spawn(Player {
         health: 50,
         max_health: 100,
-        inventory: vec![Item::HealthPotion]
+        inventory: vec![Item::HealthPotion],
     });
 
     // Add systems
@@ -202,11 +199,7 @@ fn test_health_potion_imperative(app: &mut TestApp) {
     app.update();
 
     // Assert
-    let player_health = app.world()
-        .entity(player)
-        .get::<Player>()
-        .unwrap()
-        .health;
+    let player_health = app.world().entity(player).get::<Player>().unwrap().health;
     assert_eq!(player_health, 100);
 }
 
@@ -303,10 +296,7 @@ struct EconomySettings {
 }
 
 // Example systems
-fn movement_system(
-    time: Res<Time>,
-    mut query: Query<(&mut Position, &Velocity)>,
-) {
+fn movement_system(time: Res<Time>, mut query: Query<(&mut Position, &Velocity)>) {
     for (mut pos, vel) in &mut query {
         pos.0 += vel.0 * time.delta_secs();
     }
@@ -323,45 +313,35 @@ fn damage_system(
             player.health -= damage.max(0);
 
             if player.health <= 0 {
-                death_events.send(DeathEvent { entity: event.target });
+                death_events.send(DeathEvent {
+                    entity: event.target,
+                });
             }
         }
     }
 }
 
-fn death_system(
-    mut commands: Commands,
-    mut events: EventReader<DeathEvent>,
-) {
+fn death_system(mut commands: Commands, mut events: EventReader<DeathEvent>) {
     for event in events.read() {
         commands.entity(event.entity).despawn();
     }
 }
 
-fn regeneration_system(
-    time: Res<Time>,
-    mut players: Query<&mut Player>,
-) {
+fn regeneration_system(time: Res<Time>, mut players: Query<&mut Player>) {
     for mut player in &mut players {
         let regen = (player.regen_rate as f32 * time.delta_secs()) as i32;
         player.health = (player.health + regen).min(player.max_health);
     }
 }
 
-fn collect_taxes_system(
-    settings: Res<EconomySettings>,
-    mut nations: Query<&mut Nation>,
-) {
+fn collect_taxes_system(settings: Res<EconomySettings>, mut nations: Query<&mut Nation>) {
     for mut nation in &mut nations {
         let tax = (nation.population as f32 * settings.tax_rate) as i32;
         nation.treasury += tax;
     }
 }
 
-fn use_item_system(
-    mut events: EventReader<UseItemEvent>,
-    mut players: Query<&mut Player>,
-) {
+fn use_item_system(mut events: EventReader<UseItemEvent>, mut players: Query<&mut Player>) {
     for event in events.read() {
         if let Ok(mut player) = players.get_mut(event.entity) {
             if let Some(index) = player.inventory.iter().position(|i| i == &event.item) {

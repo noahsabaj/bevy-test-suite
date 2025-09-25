@@ -46,7 +46,11 @@ impl Parse for ComponentTest {
         syn::bracketed!(operations_content in content);
         let operations = parse_operations(&operations_content)?;
 
-        Ok(ComponentTest { name, given, operations })
+        Ok(ComponentTest {
+            name,
+            given,
+            operations,
+        })
     }
 }
 
@@ -72,7 +76,11 @@ fn parse_operations(input: ParseStream) -> Result<Vec<Operation>> {
         // Parse expected state
         let expected_state: Expr = input.parse()?;
 
-        operations.push(Operation { method, args, expected_state });
+        operations.push(Operation {
+            method,
+            args,
+            expected_state,
+        });
 
         input.parse::<Token![,]>().ok();
     }

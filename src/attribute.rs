@@ -45,7 +45,10 @@ fn parse_config(input: ParseStream) -> Result<TestConfig> {
                 config.timeout_ms = Some(lit.base10_parse()?);
             }
             _ => {
-                return Err(syn::Error::new(ident.span(), "Unknown configuration option"));
+                return Err(syn::Error::new(
+                    ident.span(),
+                    "Unknown configuration option",
+                ));
             }
         }
 

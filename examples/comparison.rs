@@ -6,7 +6,7 @@
 //! 3. test_scenario! declarative (our innovation)
 
 use bevy::prelude::*;
-use bevy_test_suite::{bevy_test, test_scenario, bevy_test_utils};
+use bevy_test_suite::{bevy_test, bevy_test_utils, test_scenario};
 
 bevy_test_utils!();
 
@@ -28,10 +28,7 @@ struct DamageEvent {
     amount: i32,
 }
 
-fn damage_system(
-    mut events: EventReader<DamageEvent>,
-    mut query: Query<&mut Player>,
-) {
+fn damage_system(mut events: EventReader<DamageEvent>, mut query: Query<&mut Player>) {
     for event in events.read() {
         if let Ok(mut player) = query.get_mut(event.target) {
             player.health -= event.amount;
@@ -52,10 +49,13 @@ fn test_damage_manual() {
     app.add_systems(Update, damage_system);
 
     // Spawn entities
-    let player = app.world_mut().spawn(Player {
-        health: 100,
-        position: Vec3::ZERO,
-    }).id();
+    let player = app
+        .world_mut()
+        .spawn(Player {
+            health: 100,
+            position: Vec3::ZERO,
+        })
+        .id();
 
     // Send damage event
     app.world_mut().send_event(DamageEvent {
@@ -67,11 +67,7 @@ fn test_damage_manual() {
     app.update();
 
     // Assert
-    let player_health = app.world()
-        .entity(player)
-        .get::<Player>()
-        .unwrap()
-        .health;
+    let player_health = app.world().entity(player).get::<Player>().unwrap().health;
     assert_eq!(player_health, 70);
 }
 
@@ -103,8 +99,14 @@ fn test_damage_attribute(app: &mut TestApp) {
 #[bevy_test(headless, timeout = 1000)]
 fn test_damage_attribute_configured(app: &mut TestApp) {
     // Configuration in the attribute!
-    let player = app.spawn(Player { health: 100, position: Vec3::ZERO });
-    app.send_event(DamageEvent { target: player, amount: 30 });
+    let player = app.spawn(Player {
+        health: 100,
+        position: Vec3::ZERO,
+    });
+    app.send_event(DamageEvent {
+        target: player,
+        amount: 30,
+    });
     app.advance_frames(1);
     assert_eq!(app.query::<&Player>().single().health, 70);
 }
@@ -135,18 +137,30 @@ test_scenario!(test_damage_declarative {
 #[bevy_test]
 fn test_complex_combat_attribute(app: &mut TestApp) {
     // Setup
-    let player = app.spawn(Player { health: 100, position: Vec3::ZERO });
+    let player = app.spawn(Player {
+        health: 100,
+        position: Vec3::ZERO,
+    });
     let enemy1 = app.spawn(Enemy { damage: 20 });
     let enemy2 = app.spawn(Enemy { damage: 15 });
 
     // Simulate combat rounds
-    app.send_event(DamageEvent { target: player, amount: 20 });
+    app.send_event(DamageEvent {
+        target: player,
+        amount: 20,
+    });
     app.advance_time(1.0);
 
-    app.send_event(DamageEvent { target: player, amount: 15 });
+    app.send_event(DamageEvent {
+        target: player,
+        amount: 15,
+    });
     app.advance_time(1.0);
 
-    app.send_event(DamageEvent { target: player, amount: 30 });
+    app.send_event(DamageEvent {
+        target: player,
+        amount: 30,
+    });
     app.advance_time(1.0);
 
     // Assert final state
@@ -195,17 +209,17 @@ fn test_best_for_algorithms(app: &mut TestApp) {
         });
 
         if i % 2 == 0 {
-            app.send_event(DamageEvent { target: entity, amount: 5 });
+            app.send_event(DamageEvent {
+                target: entity,
+                amount: 5,
+            });
         }
     }
 
     app.update();
 
     // Complex assertions
-    let healths: Vec<i32> = app.query::<&Player>()
-        .iter()
-        .map(|p| p.health)
-        .collect();
+    let healths: Vec<i32> = app.query::<&Player>().iter().map(|p| p.health).collect();
 
     assert!(healths.iter().all(|&h| h >= 0));
 }

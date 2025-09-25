@@ -35,12 +35,12 @@ extern crate proc_macro;
 use proc_macro::TokenStream;
 use syn::parse_macro_input;
 
-mod scenario;
-mod system;
-mod component;
-mod builders;
 mod assertions;
 mod attribute;
+mod builders;
+mod component;
+mod scenario;
+mod system;
 
 /// Creates a complete test scenario with given/when/then structure.
 ///

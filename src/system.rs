@@ -71,7 +71,12 @@ impl Parse for SystemTest {
         syn::braced!(expect_content in content);
         let expect = parse_expect_block(&expect_content)?;
 
-        Ok(SystemTest { name, setup, call, expect })
+        Ok(SystemTest {
+            name,
+            setup,
+            call,
+            expect,
+        })
     }
 }
 
@@ -110,7 +115,10 @@ fn parse_setup_block(input: ParseStream) -> Result<SetupBlock> {
                     let var_name: Ident = input.parse()?;
                     input.parse::<Token![:]>()?;
                     let components: Expr = input.parse()?;
-                    entities.push(EntitySetup { var_name, components });
+                    entities.push(EntitySetup {
+                        var_name,
+                        components,
+                    });
                 }
             }
         }
@@ -118,7 +126,11 @@ fn parse_setup_block(input: ParseStream) -> Result<SetupBlock> {
         input.parse::<Token![,]>().ok();
     }
 
-    Ok(SetupBlock { resources, entities, events })
+    Ok(SetupBlock {
+        resources,
+        entities,
+        events,
+    })
 }
 
 fn parse_system_call(input: ParseStream) -> Result<SystemCall> {
