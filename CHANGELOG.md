@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.0] - 2025-09-25
+
 ### Added
 - Initial release of bevy-test-suite
 - `#[bevy_test]` attribute macro for reducing test boilerplate
@@ -26,7 +28,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Time manipulation utilities (advance by frames, seconds, or days)
 - Zero runtime overhead - all macros expand at compile time
 - Compatible with Bevy 0.16
-
-## [0.1.0] - TBD
-
-Initial release - see Unreleased section above for features.
