@@ -6,18 +6,6 @@ Thank you for your interest in contributing to bevy-test-suite! This document pr
 
 Be respectful and constructive. We're all here to make Bevy testing better.
 
-## Critical Rules
-
-### No Emojis Policy
-
-This codebase maintains a **strict no-emoji policy**:
-- No emojis in code, comments, or strings
-- No emojis in documentation or examples
-- No emojis in commit messages or PR descriptions
-- No emojis in error messages
-
-This ensures professional, clear communication and prevents the appearance of AI-generated content.
-
 ## Getting Started
 
 1. **Fork and Clone**
