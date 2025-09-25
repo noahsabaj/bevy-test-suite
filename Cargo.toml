@@ -1,0 +1,41 @@
+[package]
+name = "bevy-test-suite"
+version = "0.1.0"
+edition = "2021"
+authors = ["bevy-test-suite contributors"]
+description = "The #[bevy_test] attribute you've been waiting for, plus powerful declarative testing for Bevy"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/yourusername/bevy-test-suite"
+keywords = ["bevy", "testing", "test", "gamedev", "declarative"]
+categories = ["game-development", "development-tools::testing"]
+
+[dependencies]
+syn = { version = "2.0", features = ["full", "extra-traits"] }
+quote = "1.0"
+proc-macro2 = "1.0"
+
+[dev-dependencies]
+bevy = "0.16"
+
+[lib]
+proc-macro = true
+
+[[example]]
+name = "basic_scenario"
+path = "examples/basic_scenario.rs"
+
+[[example]]
+name = "system_testing"
+path = "examples/system_testing.rs"
+
+[[example]]
+name = "property_testing"
+path = "examples/property_testing.rs"
+
+[[example]]
+name = "dual_approach"
+path = "examples/dual_approach.rs"
+
+[[example]]
+name = "comparison"
+path = "examples/comparison.rs"
